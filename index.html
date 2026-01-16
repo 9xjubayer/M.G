@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Friend Service</title>
+    <style>
+        /* মডার্ন ব্যাকগ্রাউন্ড অ্যানিমেশন */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* একটি প্রিমিয়াম ডার্ক মেস গ্র্যাডিয়েন্ট */
+            background: radial-gradient(circle at top left, #1a2a6c, transparent 50%),
+                        radial-gradient(circle at top right, #b21f1f, transparent 50%),
+                        radial-gradient(circle at bottom left, #fdbb2d, transparent 50%),
+                        #0f0c29;
+            background-size: 200% 200%;
+            animation: meshGradient 15s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes meshGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* গ্লাসমরফিজম কার্ড ডিজাইন */
+        .login-box {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); /* Safari সাপোর্ট */
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            width: 380px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* কার্ডের পেছনে হালকা গ্লো ইফেক্ট */
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #00d2ff, #92fe9d, #00d2ff);
+            z-index: -1;
+            border-radius: 25px;
+            filter: blur(10px);
+            opacity: 0.3;
+        }
+
+        h2 { 
+            color: #fff; 
+            margin-bottom: 30px; 
+            text-transform: uppercase; 
+            font-size: 24px; 
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+
+        label { color: #e0e0e0; font-size: 13px; margin-left: 5px; font-weight: 300; }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            outline: none;
+            margin-top: 8px;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 20px;
+            transition: 0.5s;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+        }
+
+        button:hover { 
+            background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+        }
+
+        button:active { transform: translateY(0); }
+
+        #statusMessage {
+            margin-top: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .success { background: rgba(0, 255, 136, 0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); }
+        .error { background: rgba(255, 75, 43, 0.15); color: #ff4b2b; border: 1px solid rgba(255,75,43,0.3); }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>Add Friend</h2>
+        <form id="friendForm">
+            <div class="input-group">
+                <label>Guest UID</label>
+                <input type="text" id="uid" placeholder="Enter Guest UID" required>
+            </div>
+
+            <div class="input-group">
+                <label>Guest Password</label>
+                <input type="password" id="password" placeholder="Enter Password" required>
+            </div>
+
+            <div class="input-group">
+                <label>Target UID</label>
+                <input type="text" id="friend_uid" placeholder="Enter Target UID" required>
+            </div>
+
+            <button type="submit" id="submitBtn">ADD FRIEND</button>
+        </form>
+
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById('friendForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('statusMessage');
+            
+            const uid = document.getElementById('uid').value;
+            const pass = document.getElementById('password').value;
+            const target = document.getElementById('friend_uid').value;
+
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            const apiUrl = `https://danger-add-friend.vercel.app/adding_friend?uid=${uid}&password=${pass}&friend_uid=${target}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    status.style.display = "block";
+                    if (data.success === true) {
+                        status.innerHTML = "✅ Request Successful!";
+                        status.className = "success";
+                    } else {
+                        status.innerHTML = "❌ Failed: " + (data.message || "Invalid Details");
+                        status.className = "error";
+                    }
+                })
+                .catch(err => {
+                    status.style.display = "block";
+                    status.innerHTML = "❌ Connection Error!";
+                    status.className = "error";
+                })
+                .finally(() => {
+                    btn.innerText = "ADD FRIEND";
+                    btn.disabled = false;
+                });
+        });
+    </script>
+
+</body>
+</html>
